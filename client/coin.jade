@@ -1,0 +1,442 @@
+head
+    title gcoin
+    meta(name='viewport', content='user-scalable=yes, initial-scale=1.0, maximum-scale=3.0, width=device-width')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    meta(name='apple-mobile-web-app-status-bar-style', content='black')
+    
+    link(rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png")
+
+    link(rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5")
+    meta(name="apple-mobile-web-app-title" content="gratigen")
+    meta(name="application-name" content="gratigen")
+    meta(name="msapplication-TileColor" content="#da532c")
+    meta(name="theme-color" content="#000000")
+    
+    
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+    link(href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet")
+    
+    link(rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css')
+    link(rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png")
+    link(rel="manifest" href="/site.webmanifest")
+    // link(href="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/css/suneditor.min.css" rel="stylesheet")
+
+    script(src='https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js')
+    script(src='https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.js')
+    
+    // script(src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js")
+    // script(src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/en.js")
+    
+    // script(src="https://widget-js.cometchat.io/v3/cometchatwidget.js" defer='')
+
+    //- script(async='', src='https://www.googletagmanager.com/gtag/js?id=UA-140259454-1')
+    script.
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        gtag('config', 'G-GLYPPRGJFQ');
+
+body 
+    +home
+    
+template(name='home')
+    // button.ui.button.a2hs
+    //     |Add to home screen
+
+    img.ui.fluid.image.bg_overlay(src="{{c.url 'forest-bg2' width=1000 crop='fit'}}")    
+    .ui.attached.menu
+        .item 
+            +i name='chat'
+            |gchat
+        if is_loading
+            .item 
+                i.loading.yin.yang.icon
+                |loading...
+        .right.menu 
+            if currentUser
+                a.item.logout
+                    i.sign.out.icon
+                    |log out 
+            .item 
+                i.user.icon
+                |profile
+    .ui.stackable.padded.centered.grid 
+        unless currentUser 
+            .eight.wide.column
+                +login
+        else 
+            .three.column.row
+                .column
+                    .ui.header channels/orgs/dms
+                .column
+                    .ui.header #{message_docs.count} messages
+                    if currentUser
+                        .ui.comments.scrolling
+                            each message_docs
+                                +message_item
+                        .ui.fluid.icon.input
+                            i.plus.icon
+                            input.new_message(type='text' placeholder='add message...')
+                .column
+                    .ui.header detail view
+            
+            
+template(name='message_item')
+    .comment
+        a.avatar 
+            if _author.image_id
+                img.ui.avatar.image(src="{{c.url _author.image_id width=200 height=200 gravity='face' crop='fill'}}")
+        .content
+            a.author #{_author.username}
+            .metadata 
+                span.date #{_when}
+            .text !{body}
+            .actions 
+                a.reply reply
+                i.thumbs.up.link.icon.vote_up(class=upvote_class)
+                i.thumbs.down.link.icon.vote_down(class=downvote_class)
+                if points 
+                    |#{points}
+
+
+template(name='login')
+    .ui.padded.stackable.grid
+        .centered.row
+            .eight.wide.column
+                // img.ui.image(src="{{c.url 'kitchen_logo' gravity='face' crop='fill'}}")
+                .ui.massive.center.aligned.header
+                    img.ui.circular.image(src="/logo.png")
+                    // +ibig name='network'
+                    |gratigen login
+                .ui.inline.small.header 
+                    +i name='user-male'
+                    // i.user.outline.icon
+                    |username
+                .ui.fluid.big.input(class=login_class)
+                    input.username(type='text')
+                .spacer
+                .ui.inline.header 
+                    +i name='password'
+                    // i.lock.icon
+                    | password
+                .ui.fluid.big.input(class=login_class)
+                    input.password(type='password')
+                //- if username
+                //- if logging_in
+                .ui.hidden.divider
+                .ui.fluid.big.green.button.enter.invert(title="login #{username}" class=enter_class)
+                    +i name='internal' cl='ui mini inline image'
+                    |login
+                    strong #{username}
+                    //- i.right.chevron.icon
+                .ui.horizontal.divider or
+                .ui.center.aligned.basic.segment    
+                    // a.ui.compact.small.button(href='/forgot_password')
+                    //     +i name='forgot-password' cl='ui mini inline image'                    
+                    //     |forgot password
+
+                    a.ui.big.teal.button(href='/register')
+                        i.user.plus.icon
+                        |register
+
+template(name='register')
+    img.ui.fluid.image.bg_overlay(src="{{c.url 'forest-bg2' width=1000 crop='fit'}}")    
+    .ui.padded.stackable.grid
+        .centered.middle.aligned.row
+            .ten.wide.column
+                // img.ui.centered.image(src="https://nudefoodsmarket.com/wp-content/uploads/2021/03/logo-smaller-300x87.jpg")
+                h1.ui.center.aligned.header
+                    // +i name='user-add'
+                    +i name='truck'
+                    // i.user.add.large.icon
+                    | + gratigen register
+                .ui.inline.small.header 
+                    +i name='user-male'
+                    |username
+                .ui.fluid.large.input(class=login_class)
+                    input.username(type='text')
+                .spacer
+                .ui.inline.small.header 
+                    +i name='password'
+                    | password
+                .ui.fluid.large.input(class=login_class)
+                    input.password(type='password')
+
+                //- .ui.fluid.labeled.input(class=login_class)
+                //-     .ui.small.inline.header 
+                //-         i.lock.grey.icon
+                //-         | password again
+                //-     input.password2(type='password')
+                .ui.hidden.divider
+                // if can_register
+                    //- if registering
+                .ui.fluid.big.button.register(class=enter_class)
+                    i.user.plus.icon
+                    |register
+                // else
+                //     .ui.fluid.big.disabled.button(class=enter_class)
+                //         i.user.plus.icon
+                //         |register
+                    // // .ui.small.header username "#{username}" found
+                .ui.divider
+                a.ui.button(href='/login') 
+                    // i.right.chevron.icon
+                    +i name='internal' cl='ui avatar image'
+                    |login
+                    
+                    
+                    
+template(name='i')
+    img(src="https://img.icons8.com/office/48/000000/#{name}.png" class='ui inline image' title=title)
+    
+    
+    
+template(name='bank')
+    .ui.stackable.padded.grid 
+        .sixteen.wide.column
+            .ui.big.header 
+                +i name='bank'
+                |bank
+            +block template='transfers'
+
+
+template(name='transfers')
+    .ui.stackable.padded.grid
+        .sixteen.wide.column
+            .ui.inline.header 
+                +i name='exchange'
+                |transfers
+            .ui.basic.icon.button.add_transfer
+                i.large.plus.icon
+        .sixteen.wide.column
+            .ui.stackable.centered.cards
+                each model_docs_helper 'transfer'
+                    a.card.zoomer.fly_right(href="/transfer/#{_id}") 
+                        img.ui.image(src="{{c.url image_id width=400 height=400 crop='pad'}}")
+                        .content
+                            .ui.inline.header 
+                                |#{amount}p
+                            i.tag.icon
+                            each tags 
+                                .ui.label #{this}
+                            if location_tags
+                                i.marker.icon
+                            each location_tags 
+                                .ui.label #{this}
+                            |#{when} by #{_author_username} to
+                            with recipient
+                                .ui.header #{username}
+                                +user_pill
+ 
+template(name='user_credit')
+    .ui.stackable.padded.grid
+        .eight.wide.column 
+            .ui.big.header
+                +i name='coins'
+                |user credit
+            .ui.large.button.calc_points 
+                |calc points
+            .ui.header 
+                |read docs 
+            .ui.selection.animated.list.smallscroll
+                each read_docs 
+                    a.item.fly_right(href="/post/#{_id}")
+                        .ui.label #{model}
+                        |#{title}
+            +membership_block
+            with current_user
+                .ui.header total debit amount: #{total_debit_amount}
+                .ui.header total credit amount: #{total_credit_amount}
+                .ui.header total read docs: #{total_read_docs}
+            .ui.header quicksend
+            each all_users
+                +quicksend_button 
+        if is_current_user
+            .eight.wide.column 
+                .ui.inline.header
+                    // i.money.icon
+                    +i name='money'
+                    |{{current_user.points}}
+                    |points
+                // .ui.inline.header 
+                //     // i.shield.icon
+                //     +i name='shield'
+                //     |admin
+                // .ui.big.icon.button.add_credit(title='add credit')
+                //     |+1
+                // // +number_field key='credit' label='edit credit' min='0' step='1' max='1000'
+                // .ui.big.icon.button.remove_credit(title='remove credit')
+                //     |-1
+                +buy_coin amount=10
+                +buy_coin amount=20
+                +buy_coin amount=100
+                |includes 2% credit card processing fee
+                .ui.header your credit #{currentUser.credit}
+                .ui.action.input
+                    input.deposit_amount(type='number' min='1' placeholder='deposit')
+                    .ui.icon.button.add_credits   
+                        i.right.chevron.icon
+                .ui.header 
+                    +i name='deposit'
+                    |#{user_deposits.count} deposits
+                .ui.large.bulleted.list.smallscrol
+                    each user_deposits
+                        .item 
+                            .content
+                                .description 
+                                    .ui.inline.header 
+                                        |$#{amount}
+                                    +print_this
+                                    |#{when} {{long_date _timestamp}}
+                                    //- if is_dev
+                                    if currentUser.admin_mode
+                                        +remove_button        
+                +payment_section        
+                                    
+      
+template(name='quicksend_button')
+    .ui.compact.button.send
+        // +user_pill
+        |#{username}
+        |send 1c
+                        
+template(name='user_picker')
+    .ui.header 
+        |user picker
+    with picked_user
+        .ui.header #{username}
+        i.remove.link.icon.clear_target
+    .ui.fluid.input
+        input.search_user(type='text' placeholder='search...')
+    each unpicked_users
+        .ui.button.pick_user
+            |#{username}
+                
+                
+template(name='transfer_view')
+    with current_doc
+        .ui.stackable.padded.grid
+            .centered.row 
+                .five.wide.column
+                    a.fly_right(href="/user/#{_author.username}") 
+                        img.ui.circular.centered.pointer.zoom.image(src="{{c.url _author.image_id height=500 width=500 gravity='face' crop='fill'}}" class=currentUser.darkmode_class)
+                        .ui.large.center.aligned.header.pointer.zoom
+                            |#{_author.name}
+                .five.wide.column
+                    .ui.huge.center.aligned.header
+                        |#{amount}pts
+                    if is_dev
+                        +remove_button
+                    .f14
+                        +textarea_field key='body'
+                    .spacer
+                    +image_view key='image_id' label='image'
+                    +link_field key='link' label='link' icon='link'
+                    div 
+                    if tags
+                        i.tags.icon
+                        each tags 
+                            .ui.big.basic.circular.label #{this}
+                    +voting_full
+                    .ui.small.header
+                        i.clock.icon
+                        | #{when}
+                    .spacer
+                    .spacer
+                    +comments
+                    //- +array_field key='location_tags' label='location_tags'
+                .five.wide.column
+                    a.fly_right(href="/user/#{recipient.username}")
+                        img.ui.circular.centered.fluid.pointer.zoom.image(src="{{c.url recipient.image_id height=500 width=500 gravity='face' crop='fill'}}" class=currentUser.darkmode_class)
+                        .ui.large.center.aligned.header.pointer.zoom
+                            |#{recipient.name}
+        .ui.stackable.padded.grid
+            .row 
+                .six.wide.column
+                    .ui.large.fluid.basic.circular.button.cancel_debit
+                        i.large.remove.red.icon
+                        |cancel
+                    .ui.segment
+                        .ui.inline.grey.header sender
+                        +single_user_field key='_author_id'
+                        .ui.inline.header
+                            img.ui.small.image(src="{{c.url _author.image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.darkmode_class)
+                            |#{_author.name}
+                    .ui.segment
+                        .ui.header recipient
+                        with recipient
+                            i.large.remove.link.icon.remove_recipient
+                            a.pointer(href="/user/#{name}")
+                                img.ui.tiny.inline.image(src="{{c.url image_id height=400 width=400 gravity='face' crop='fill'}}" class=currentUser.darkmode_class)
+                                .ui.inline.header #{name}
+                                .ui.small.grey.inline.header #{points}
+                        unless recipient
+                            .ui.divider
+                            // i.large.user.plus.icon
+                            +single_user_field key='recipient_id' label='search member' icon='user plus'
+                            // .ui.icon.input
+                            //     i.search.icon
+                            //     input.search_username(type='text' placeholder='username')
+                            // each members
+                            //     .ui.compact.basic.circular.button.add_recipient
+                            //         // i.plus.icon
+                            //         img.ui.avatar.image(src="{{c.url image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.darkmode_class)
+                            //         |#{name}
+                            //         small #{points}p
+                    +date_field key='date' label='date'   
+                    +time_field key='time' label='time'   
+                    +array_field key='location_tags' label='location tags' icon='marker'
+                .six.wide.column
+                    +textarea_field key='description' label='description'
+                    +image_field key='image_id' label='image'
+                    +link_field key='link' label='link' icon='link'
+                    div 
+                    div
+                    .ui.inline.header
+                        i.tag.red.icon
+                        |tags
+                    .ui.input
+                        input.new_tag(type='text' placeholder='+' autocomplete="off")
+                        //- +clear_value                
+                    each terms 
+                        a.ui.large.circular.basic.button.select_term(href='#')
+                            if image
+                                img.ui.mini.rounded.inline.image(src="{{c.url image height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.darkmode_class)
+                            |#{title}
+                    each tags
+                        .ui.big.basic.circular.label
+                            i.delete.icon.remove_element
+                            |#{this}
+                    if suggestions
+                        .ui.small.inline.header suggestions
+                    each suggestions
+                        a.ui.large.circular.basic.button.select_term(href='#')
+                            // if image
+                            //     img.ui.mini.rounded.inline.image(src="{{c.url image height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.darkmode_class)
+                            |#{title}
+                .four.wide.center.aligned.column
+                    .ui.big.header #{amount}pts
+                    .ui.big.input
+                        input.point_amount(type='number' value=amount min='1' max=point_max)
+                    div
+                    +key_value_edit key='amount' value=1
+                    +key_value_edit key='amount' value=5
+                    +key_value_edit key='amount' value=10
+                    +key_value_edit key='amount' value=20
+                    +key_value_edit key='amount' value=50
+                    .spacer
+                    .ui.center.aligned.basic.segment
+                        if can_submit
+                            .ui.green.huge.circular.button.submit
+                                i.big.send.icon
+                                |send
+                        else 
+                            .ui.green.huge.circular.disabled.button
+                                i.send.big.icon
+                                |send                            
