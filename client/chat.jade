@@ -1,0 +1,196 @@
+head
+    title gchat
+    meta(name='viewport', content='user-scalable=yes, initial-scale=1.0, maximum-scale=3.0, width=device-width')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    meta(name='apple-mobile-web-app-status-bar-style', content='black')
+    
+    link(rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png")
+
+    link(rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5")
+    meta(name="apple-mobile-web-app-title" content="gratigen")
+    meta(name="application-name" content="gratigen")
+    meta(name="msapplication-TileColor" content="#da532c")
+    meta(name="theme-color" content="#000000")
+    
+    
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+    link(href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet")
+    
+    link(rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css')
+    link(rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png")
+    link(rel="manifest" href="/site.webmanifest")
+    // link(href="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/css/suneditor.min.css" rel="stylesheet")
+
+    script(src='https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js')
+    script(src='https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.js')
+    
+    // script(src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js")
+    // script(src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/en.js")
+    
+    // script(src="https://widget-js.cometchat.io/v3/cometchatwidget.js" defer='')
+
+    //- script(async='', src='https://www.googletagmanager.com/gtag/js?id=UA-140259454-1')
+    script.
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        gtag('config', 'G-GLYPPRGJFQ');
+
+body 
+    +home
+    
+template(name='home')
+    // button.ui.button.a2hs
+    //     |Add to home screen
+
+    img.ui.fluid.image.bg_overlay(src="{{c.url 'forest-bg2' width=1000 crop='fit'}}")    
+    .ui.attached.menu
+        .item 
+            +i name='chat'
+            |gchat
+        if is_loading
+            .item 
+                i.loading.yin.yang.icon
+                |loading...
+        .right.menu 
+            if currentUser
+                a.item.logout
+                    i.sign.out.icon
+                    |log out 
+            .item 
+                i.user.icon
+                |profile
+    .ui.stackable.padded.centered.grid 
+        unless currentUser 
+            .eight.wide.column
+                +login
+        else 
+            .three.column.row
+                .column
+                    .ui.header channels/orgs/dms
+                .column
+                    .ui.header #{message_docs.count} messages
+                    if currentUser
+                        .ui.comments.scrolling
+                            each message_docs
+                                +message_item
+                        .ui.fluid.icon.input
+                            i.plus.icon
+                            input.new_message(type='text' placeholder='add message...')
+                .column
+                    .ui.header detail view
+            
+            
+template(name='message_item')
+    .comment
+        a.avatar 
+            if _author.image_id
+                img.ui.avatar.image(src="{{c.url _author.image_id width=200 height=200 gravity='face' crop='fill'}}")
+        .content
+            a.author #{_author.username}
+            .metadata 
+                span.date #{_when}
+            .text !{body}
+            .actions 
+                a.reply reply
+                i.thumbs.up.link.icon.vote_up(class=upvote_class)
+                i.thumbs.down.link.icon.vote_down(class=downvote_class)
+                if points 
+                    |#{points}
+
+
+template(name='login')
+    .ui.padded.stackable.grid
+        .centered.row
+            .eight.wide.column
+                // img.ui.image(src="{{c.url 'kitchen_logo' gravity='face' crop='fill'}}")
+                .ui.massive.center.aligned.header
+                    img.ui.circular.image(src="/logo.png")
+                    // +ibig name='network'
+                    |gratigen login
+                .ui.inline.small.header 
+                    +i name='user-male'
+                    // i.user.outline.icon
+                    |username
+                .ui.fluid.big.input(class=login_class)
+                    input.username(type='text')
+                .spacer
+                .ui.inline.header 
+                    +i name='password'
+                    // i.lock.icon
+                    | password
+                .ui.fluid.big.input(class=login_class)
+                    input.password(type='password')
+                //- if username
+                //- if logging_in
+                .ui.hidden.divider
+                .ui.fluid.big.green.button.enter.invert(title="login #{username}" class=enter_class)
+                    +i name='internal' cl='ui mini inline image'
+                    |login
+                    strong #{username}
+                    //- i.right.chevron.icon
+                .ui.horizontal.divider or
+                .ui.center.aligned.basic.segment    
+                    // a.ui.compact.small.button(href='/forgot_password')
+                    //     +i name='forgot-password' cl='ui mini inline image'                    
+                    //     |forgot password
+
+                    a.ui.big.teal.button(href='/register')
+                        i.user.plus.icon
+                        |register
+
+template(name='register')
+    img.ui.fluid.image.bg_overlay(src="{{c.url 'forest-bg2' width=1000 crop='fit'}}")    
+    .ui.padded.stackable.grid
+        .centered.middle.aligned.row
+            .ten.wide.column
+                // img.ui.centered.image(src="https://nudefoodsmarket.com/wp-content/uploads/2021/03/logo-smaller-300x87.jpg")
+                h1.ui.center.aligned.header
+                    // +i name='user-add'
+                    +i name='truck'
+                    // i.user.add.large.icon
+                    | + gratigen register
+                .ui.inline.small.header 
+                    +i name='user-male'
+                    |username
+                .ui.fluid.large.input(class=login_class)
+                    input.username(type='text')
+                .spacer
+                .ui.inline.small.header 
+                    +i name='password'
+                    | password
+                .ui.fluid.large.input(class=login_class)
+                    input.password(type='password')
+
+                //- .ui.fluid.labeled.input(class=login_class)
+                //-     .ui.small.inline.header 
+                //-         i.lock.grey.icon
+                //-         | password again
+                //-     input.password2(type='password')
+                .ui.hidden.divider
+                // if can_register
+                    //- if registering
+                .ui.fluid.big.button.register(class=enter_class)
+                    i.user.plus.icon
+                    |register
+                // else
+                //     .ui.fluid.big.disabled.button(class=enter_class)
+                //         i.user.plus.icon
+                //         |register
+                    // // .ui.small.header username "#{username}" found
+                .ui.divider
+                a.ui.button(href='/login') 
+                    // i.right.chevron.icon
+                    +i name='internal' cl='ui avatar image'
+                    |login
+                    
+                    
+                    
+template(name='i')
+    img(src="https://img.icons8.com/office/48/000000/#{name}.png" class='ui inline image' title=title)
